@@ -44,7 +44,7 @@
         return result;
     };
 
-    xhr = function(method, url, data, query){
+    xhr = function(method, url, data, query, options){
         var methods = {
                 success: function(){},
                 error: function(){},
@@ -53,6 +53,8 @@
             request = null,
             callbacks = {},
             protocol = (window.location.protocol === 'file:') ? 'https:' : window.location.protocol;
+
+        options.fail_on_404 = options.fail_on_404 || true;
 
         if(method === 'GET'){
             query = utils.verifyQuery(url,query);
@@ -63,7 +65,7 @@
             request.onprogress = function(){ };
             request.ontimeout = function(){ };
         }else if(window.ActiveXObject){
-            request = new ActiveXObject('Microsoft.XMLHTTP'); 
+            request = new ActiveXObject('Microsoft.XMLHTTP');
         }else if(window.XMLHttpRequest){
             request = new XMLHttpRequest();
         }
@@ -72,9 +74,12 @@
             if(query) url += ((url.indexOf('?') > -1) ? '&' : '?') + utils.toQuery(query);
             request.open(method, (url.indexOf('http') > -1) ? url : protocol+url, true);
             request.onload = function(){
-                if((request.statusText === 'OK' && request.status === 200) || typeof request.statusText === 'undefined'){
+                if((request.statusText === 'OK' && request.status === 200) ||
+                    request.statusText === void(0) ||
+                    (request.status === 404 && options.fail_on_404)
+                ){
                     methods.success.apply(methods, utils.parse(request));
-                    methods.always.apply();    
+                    methods.always.apply();
                 } else {
                     methods.error.apply(methods, utils.parse(request));
                     methods.always.apply();
@@ -116,20 +121,20 @@
         return callbacks;
     };
 
-    exports['get'] = function (url, query) {
-        return xhr('GET', url, {}, query);
+    exports.get = function (url, query, options) {
+        return xhr('GET', url, {}, query, options);
     };
 
-    exports['put'] = function (url, data, query) {
-        return xhr('PUT', url, data, query);
+    exports.get = function (url, data, query) {
+        return xhr('PUT', url, data, query, {});
     };
 
-    exports['post'] = function (url, data, query) {
-        return xhr('POST', url, data, query);
+    exports.post = function (url, data, query) {
+        return xhr('POST', url, data, query, {});
     };
 
     exports['delete'] = function (url, query) {
-        return xhr('DELETE', url, {}, query);
+        return xhr('DELETE', url, {}, query, {});
     };
 
     return exports;

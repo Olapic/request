@@ -3,7 +3,7 @@
 ## GET
 
 ```JavaScript
-request.get(url, query);
+request.get(url, query, options);
 ```
 
 ```JavaScript
@@ -20,6 +20,9 @@ request.get(url, {
 	console.log('always');
 });
 ```
+
+###options.fail_on_404
+The default value is `true` which would trigger an error. In case it's being turned off with `false` any *404* response would trigger a success.
 
 ## POST
 
