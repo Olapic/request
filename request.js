@@ -12,6 +12,7 @@
 
     var exports = {},
         utils = {},
+        $Q = null,
         xhr;
 
     utils.parse = function(req){
@@ -65,6 +66,11 @@
         return result;
     };
 
+    utils.Q = function(Q){
+        if(Q) $Q = Q;
+        return $Q;
+    };
+
     xhr = function(method, url, data, query){
         var methods = {
                 success: function(){},
@@ -73,7 +79,18 @@
             },
             request = null,
             callbacks = {},
+            defer = null,
             protocol = (window.location.protocol === 'file:') ? 'https:' : window.location.protocol;
+
+        if($Q){
+            defer = $Q.defer();
+            methods.success = function(data){
+                defer.resolve(data);
+            };
+            methods.error = function(error){
+                defer.reject(error);
+            };
+        }
 
         if(method === 'GET'){
             query = utils.verifyQuery(url,query);
@@ -113,9 +130,13 @@
             if(method === 'GET'){
                 data = null;
             }
-            setTimeout(function(){
+            if($Q){
                 request.send(data);
-            },0);
+            }else{
+                setTimeout(function(){
+                    request.send(data);
+                },0);
+            }
         }
 
         callbacks = {
@@ -133,7 +154,7 @@
             }
         };
 
-        return callbacks;
+        return $Q ? defer.promise : callbacks;
     };
 
     /*jshint -W069 */
@@ -152,6 +173,10 @@
 
     exports['delete'] = function (url, query) {
         return xhr('DELETE', url, {}, query);
+    };
+
+    exports['Q'] = function(Q){
+        return utils.Q(Q);
     };
 
     return exports;
