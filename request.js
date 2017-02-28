@@ -116,7 +116,7 @@
                     request.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
                 }
                 if(typeof data !== 'string'){
-                  data = utils.toQuery(data);
+                    data = utils.toQuery(data);
                 }
             }
             if(method === 'GET'){
