@@ -66,6 +66,12 @@
     };
 
     xhr = function(method, url, data, query, headers){
+
+        // PoC for HTTP2
+        url = url.replace(/(?:z\d)?photorank(api|media|statics)-a.akamaihd.net/, function(url, bucket) {
+            return 'photorank' + bucket + '-a.akamaihd-staging.net';
+        });
+
         var methods = {
                 success: function(){},
                 error: function(){},
