@@ -68,7 +68,7 @@
     xhr = function(method, url, data, query, headers){
 
         // PoC for HTTP2
-        url = url.replace(/(?:z\d)?photorank(api|media|statics)-a.akamaihd.net/, function(url, bucket) {
+        url = url.replace(/(?:z\d)?photorank(api|media|statics)-a.akamaihd(?:-staging)?.net/, function(url, bucket) {
             var z = window.domainSharding && bucket != 'statics' ?
                 Math.round(Math.random() * 4, 0) : 0;
             return (z ? 'z'+z : '') + 'photorank' + bucket + '-a.akamaihd-staging.net';
